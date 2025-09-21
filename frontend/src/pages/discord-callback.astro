@@ -1,0 +1,35 @@
+---
+const home = '/prophecy-hunt'; // where to send users after login
+---
+
+<html><body class="bg-[#1a0d2e] text-white">
+<script>
+(async () => {
+  try {
+    const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const token = hash.get('access_token');
+    if (!token) throw new Error('No access token in callback.');
+
+    const res = await fetch('https://discord.com/api/users/@me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error('Discord identify failed');
+    const user = await res.json();
+
+    // Persist a minimal identity object your app expects
+    localStorage.setItem('discordUser', JSON.stringify({
+      id: user.id,
+      username: user.username,
+      discriminator: user.discriminator ?? '0000',
+      avatar: user.avatar ?? null,
+    }));
+  } catch (e) {
+    console.error('Discord login error:', e);
+    alert('Discord login failed. Please try again.');
+  } finally {
+    // Clean URL + redirect
+    location.replace(sessionStorage.getItem('preLoginUrl') || '${home}');
+  }
+})();
+</script>
+</body></html>

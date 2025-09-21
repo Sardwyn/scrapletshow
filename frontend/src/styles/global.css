@@ -1,0 +1,231 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🧱 Base Background */
+html, body {
+    background-color: #1a0d2e;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* 🌀 Hover Jiggle Animation */
+@keyframes jiggle {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(1.5deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    75% {
+        transform: rotate(-1.5deg);
+    }
+}
+
+.jiggle-on-hover:hover {
+    animation: jiggle 0.2s ease-in-out infinite;
+}
+
+/* 📺 SCANLINES: horizontal lines with drift */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 10;
+    background: repeating-linear-gradient( to bottom, rgba(255, 255, 255, 0.06) 0px, rgba(255, 255, 255, 0.08) 1px, transparent 1px, transparent 3px );
+    animation: scanDrift 12s linear infinite;
+    mix-blend-mode: soft-light;
+    opacity: 0.25;
+}
+
+/* 🔁 Reusable scanline block */
+.scanline-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    mix-blend-mode: screen;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.scanline-overlay::before {
+    content: '';
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.03),
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+}
+
+/* ⚡ FLICKER: CRT brightness pulse */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 11;
+    background-color: rgba(255, 255, 255, 0.015);
+    animation: flicker 1.2s infinite steps(2);
+    mix-blend-mode: overlay;
+}
+
+/* 🎞️ SCROLLING scanline motion */
+@keyframes scanDrift {
+    0% {
+        background-position-y: 0;
+    }
+
+    100% {
+        background-position-y: 100vh;
+    }
+}
+
+/* ✨ CRT flicker pulse */
+@keyframes flicker {
+    0%, 100% {
+        opacity: 0.9;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.vhs-wrapper {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    animation: vhsWobble 1.8s infinite ease-in-out;
+}
+
+.vhs-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    mix-blend-mode: screen;
+    filter: url('#rgbShift');
+    opacity: 0.15;
+    z-index: 2;
+    pointer-events: none;
+    animation: rgbGlitch 0.25s infinite steps(2, jump-none);
+}
+
+/* Horizontal wave distortion */
+@keyframes vhsWobble {
+    0%, 100% {
+        transform: skewX(0deg) translateY(0px);
+    }
+
+    25% {
+        transform: skewX(0.3deg) translateY(-0.5px);
+    }
+
+    50% {
+        transform: skewX(-0.3deg) translateY(0.5px);
+    }
+
+    75% {
+        transform: skewX(0.2deg) translateY(-1px);
+    }
+}
+
+/* RGB ghost flicker */
+@keyframes rgbGlitch {
+    0%, 100% {
+        opacity: 0.15;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+}
+
+@keyframes vhs-jitter {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    33% {
+        transform: translate(-0.5px, 0.3px);
+    }
+
+    66% {
+        transform: translate(0.5px, -0.3px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+.vhs-wrapper {
+    animation: vhs-jitter 0.12s infinite;
+}
+
+@keyframes scanlines-move {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 3px;
+    }
+}
+
+.scanline-test {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    background-image: repeating-linear-gradient( to bottom, rgba(255, 255, 255, 0.15) 0px, rgba(255, 255, 255, 0.15) 2px, transparent 2px, transparent 5px );
+    animation: flickerScan 0.3s infinite;
+}
+
+@keyframes flickerScan {
+    0%, 100% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+@keyframes typeIn {
+  from { width: 0 }
+  to { width: 100% }
+}
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typeIn 1.8s steps(40, end);
+}

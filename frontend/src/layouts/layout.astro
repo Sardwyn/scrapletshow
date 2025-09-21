@@ -1,0 +1,173 @@
+﻿---
+// layout.astro (top)
+const { title } = Astro.props;
+const clientId = import.meta.env.PUBLIC_DISCORD_CLIENT_ID;
+const redirect = import.meta.env.PUBLIC_DISCORD_REDIRECT_URI;
+const scope = 'identify';
+const authBase = 'https://discord.com/api/oauth2/authorize';
+const loginUrl = `${authBase}?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirect)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="text-white font-mono">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+    <style>
+      .flicker {
+        animation: flicker 2s infinite alternate;
+      }
+
+      @keyframes flicker {
+        0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+        20%, 24%, 55% { opacity: 0.3; }
+      }
+
+      .text-shadow-neon {
+        text-shadow: 0 0 2px #fff, 0 0 10px #0ff, 0 0 20px #0ff;
+      }
+
+      .text-shadow-pink {
+        text-shadow: 0 0 2px #fff, 0 0 10px #ff00aa, 0 0 20px #ff00aa;
+      }
+
+      .scanline-overlay::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(to bottom,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.03) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#1a0d2e] text-white font-mono relative overflow-x-hidden m-0 p-0">
+    <div class="scanline-overlay absolute inset-0 mix-blend-screen opacity-10 z-0"></div>
+    <div class="scanline-overlay absolute inset-0 z-0 mix-blend-screen opacity-10"></div>
+
+    <main class="relative z-10 p-4 max-w-6xl mx-auto">
+
+      <!-- 🎬 Site Title -->
+      <header class="text-center mb-6">
+        <h1 class="font-neon text-shadow-neon flicker text-neonGreen text-3xl sm:text-5xl md:text-7xl leading-snug">
+          <div>The</div>
+          <div>Scraplet</div>
+          <div>Show</div>
+        </h1>
+      </header>
+
+      <!-- 🧭 Navigation Bar -->
+<nav class="mb-12 text-neonGreen font-neon text-sm sm:text-base tracking-widest text-center">
+  <ul class="flex justify-center gap-8 flex-wrap">
+    <li>
+      <a
+        href="/"
+        class={`hover:text-pink ${Astro.url.pathname === '/' ? 'text-pink underline' : ''}`}
+      >
+        Home
+      </a>
+    </li>
+    <li>
+      <a
+        href="/gallery"
+        class={`hover:text-pink ${Astro.url.pathname.startsWith('/gallery') ? 'text-pink underline' : ''}`}
+      >
+        Episodes
+      </a>
+    </li>
+    <li>
+      <a
+        href="/guests"
+        class={`hover:text-pink ${Astro.url.pathname.startsWith('/guests') ? 'text-pink underline' : ''}`}
+      >
+        Show Guests
+      </a>
+    </li>
+    <li>
+      <a
+        href="/zoltar-log"
+        class={`hover:text-pink ${Astro.url.pathname.startsWith('/zoltar') ? 'text-pink underline' : ''}`}
+      >
+        Ask Zoltar
+      </a>
+    </li>
+    <li>
+      <a
+        href="/prophecy-hunt"
+        class={`hover:text-pink ${Astro.url.pathname === '/prophecy-hunt' ? 'text-pink underline' : ''}`}
+      >
+        Prophecy-Hunt
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<!-- 🔑 Discord Login Widget (inline, simplified) -->
+<div class="mb-8 flex justify-center">
+  <div id="discord-login" class="flex items-center gap-3 text-sm text-white">
+    <!-- Always render the button with the server-built URL -->
+    <a href={loginUrl} class="px-3 py-1 bg-neonGreen text-black font-bold rounded" data-action="login">
+      Login with Discord
+    </a>
+  </div>
+</div>
+
+<script is:client>
+(() => {
+  const container = document.getElementById('discord-login');
+  if (!container) return; // safety
+
+  function render() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('discordUser') || 'null'); } catch {}
+
+    if (user) {
+      container.innerHTML = `
+        <span class="text-white/80">Logged in as</span>
+        <span class="px-2 py-1 bg-black/40 border border-pink rounded">${user.username}#${user.discriminator ?? '0000'}</span>
+        <button class="px-3 py-1 bg-pink text-black font-bold rounded" data-action="logout">Logout</button>
+      `;
+      container.querySelector('[data-action="logout"]')?.addEventListener('click', () => {
+        localStorage.removeItem('discordUser');
+        location.reload();
+      });
+    } else {
+      // Ensure we save a return URL before the OAuth hop
+      const loginLink = container.querySelector('[data-action="login"]');
+      loginLink?.addEventListener('click', () => {
+        try { sessionStorage.setItem('preLoginUrl', location.href); } catch {}
+      });
+    }
+  }
+
+  render();
+})();
+</script>
+
+
+
+
+      <!-- 🧱 Page Content -->
+      <slot />
+    <footer class="mt-12 py-6 text-center text-xs border-t border-pink/40 text-neonGreen flicker">
+      <p class="tracking-wider">
+        Scraplet Broadcasting Corporation 2025 - All Rights Reserved
+      </p>
+    </footer>
+
+    </main>
+  </body>
+</html>

@@ -1,0 +1,206 @@
+---
+const { episode, group, artifacts } = Astro.props;
+
+// Each group has 3 clues: title, image, spoken
+const titleClue = group?.clues?.find((c) => c.type === 'title');
+const imageClue = group?.clues?.find((c) => c.type === 'image');
+const spokenClue = group?.clues?.find((c) => c.type === 'spoken');
+
+const points = Number.isFinite(group?.points) ? group.points : 0;
+const groupId = group?.groupId || '';
+const answerId = group?.artifactId || '';
+const tagline = group?.tagline || '';
+
+const PLACEHOLDER = '/images/retro-tv-placeholder.png';
+const hasImage = typeof imageClue?.image === 'string' && imageClue.image.trim().length > 0;
+const imgSrc = hasImage ? imageClue.image : PLACEHOLDER;
+---
+
+<div class="bg-black/40 border-2 border-pink rounded-xl p-4 shadow-xl">
+  <!-- Header w/ title clue -->
+  {titleClue?.text && <h3 class="text-lg font-bold mb-3">{titleClue.text}</h3>}
+
+  <!-- Content row: image floats left, text & form on right -->
+  <div class="flex items-start gap-4">
+    <div class="shrink-0">
+      {hasImage ? (
+        <img
+          src={imgSrc}
+          alt="Clue Image"
+          class="max-h-32 w-auto object-contain"
+          onerror={`this.src='${PLACEHOLDER}'`}
+        />
+      ) : (
+        <img
+          src={PLACEHOLDER}
+          alt="Placeholder image"
+          class="h-32 w-32 object-contain border border-pink/50"
+        />
+      )}
+    </div>
+
+    <div class="flex-1">
+      {spokenClue?.text && (
+        <p class="mb-3 text-white/80 italic">“{spokenClue.text}”</p>
+      )}
+
+      <!-- Form carries needed data via data-* -->
+      <form
+        id={`guess-form-${groupId}`}
+        class="guess-form"
+        data-episode={episode}
+        data-groupid={groupId}
+        data-answerid={answerId}
+        data-points={points}
+        data-tagline={tagline}
+        action="javascript:void(0)"
+      >
+        <label class="block text-sm mb-1">Choose the artifact:</label>
+        <select
+          id={`artifact-select-${groupId}`}
+          name="artifact"
+          class="bg-black text-white border border-pink px-4 py-2 rounded w-full max-w-xs"
+        >
+          <option value="">-- Select an artifact --</option>
+          {artifacts.map((opt) => (
+            <option value={opt.id}>{opt.name}</option>
+          ))}
+        </select>
+
+        <button
+          type="submit"
+          class="ml-0 mt-3 px-4 py-2 bg-neonGreen text-black font-bold rounded"
+        >
+          Submit
+        </button>
+      </form>
+
+      <div id={`status-${groupId}`} class="mt-3 font-bold hidden"></div>
+
+      {typeof window !== 'undefined' && (
+        <div class="mt-2 text-xs text-white/60">
+          Your current score: {localStorage.getItem('prophecyScore') || 0}
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
+<script is:client>
+(() => {
+  function attachClueForm(form) {
+    const episode   = form.dataset.episode;
+    const groupId   = form.dataset.groupid;
+    const answerId  = form.dataset.answerid;
+    const points    = parseInt(form.dataset.points || '0', 10);
+    const tagline   = form.dataset.tagline || '';
+    const selectEl  = form.querySelector('select[name="artifact"]');
+    const statusEl  = document.getElementById(`status-${groupId}`);
+    const keyPrefix = () => {
+      try {
+        const du = JSON.parse(localStorage.getItem('discordUser') || 'null');
+        return du ? `guess:${du.id}:${episode}:${groupId}` : null;
+      } catch { return null; }
+    };
+
+    async function submitHandler(e) {
+      e.preventDefault();
+
+      // Discord check
+      let discordUser = null;
+      try { discordUser = JSON.parse(localStorage.getItem('discordUser') || 'null'); } catch {}
+      if (!discordUser) {
+        alert('Please log in with Discord first.');
+        return;
+      }
+
+      const chosen = (selectEl && selectEl.value) || '';
+      if (!chosen) {
+        alert('Please select an artifact.');
+        return;
+      }
+
+      const guessKey = keyPrefix();
+      if (!guessKey) {
+        alert('Could not read user. Try re-logging.');
+        return;
+      }
+
+      if (localStorage.getItem(guessKey)) {
+        alert('You already guessed for this clue.');
+        return;
+      }
+
+      // Local lock + optimistic UI
+      localStorage.setItem(guessKey, 'guessed');
+      const correct = chosen === answerId;
+
+      if (statusEl) {
+        statusEl.classList.remove('hidden', 'text-pink', 'text-neonGreen');
+        statusEl.classList.add(correct ? 'text-neonGreen' : 'text-pink');
+        statusEl.textContent = correct
+          ? (points > 0 ? `Correct! +${points} points` : 'Correct!')
+          : 'Incorrect — try again next time!';
+      }
+
+      if (correct && points > 0) {
+        const scoreKey = 'prophecyScore';
+        const current = parseInt(localStorage.getItem(scoreKey) || '0', 10);
+        localStorage.setItem(scoreKey, String(current + points));
+        if (tagline) {
+          alert(tagline);
+        }
+      }
+
+      // Backend payload
+      const payload = {
+        userId: discordUser.id,
+        username: `${discordUser.username}#${discordUser.discriminator}`,
+        episode,
+        clueId: groupId,
+        guess: chosen,
+      };
+
+      try {
+        const res = await fetch('/api/submit-guess', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          if (res.status === 409) {
+            localStorage.setItem(guessKey, JSON.stringify(payload));
+            alert('Already guessed for this clue.');
+          } else {
+            const err = await res.json().catch(() => ({}));
+            alert(`Error: ${err.error || 'Submission failed'}`);
+            localStorage.removeItem(guessKey);
+            if (statusEl) {
+              statusEl.textContent = 'Submission failed. Please try again.';
+              statusEl.classList.remove('text-neonGreen');
+              statusEl.classList.add('text-pink');
+            }
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Could not submit your guess. Try again later.');
+        localStorage.removeItem(guessKey);
+        if (statusEl) {
+          statusEl.textContent = 'Network error. Please try again.';
+          statusEl.classList.remove('text-neonGreen');
+          statusEl.classList.add('text-pink');
+        }
+      }
+    }
+
+    form.addEventListener('submit', submitHandler);
+  }
+
+  // Attach once the island is hydrated
+  document.querySelectorAll('form.guess-form').forEach(attachClueForm);
+})();
+</script>
+
+

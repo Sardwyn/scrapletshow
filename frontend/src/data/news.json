@@ -1,0 +1,31 @@
+[
+  {
+    "id": "a-001",
+    "date": "2025-08-15",
+    "type": "note",
+    "title": "Welcome to the Scraplet Newswire",
+    "body": "We’ll post schedule changes, VOD drops, giveaways, and guest teases here."
+  },
+  {
+    "id": "a-002",
+    "date": "2025-08-25",
+    "type": "link",
+    "title": "Episode schedule & FAQ",
+    "url": "/gallery",
+    "body": "Air times, how to play Prophecy Hunt, and eligibility for prizes."
+  },
+  {
+    "id": "a-003",
+    "date": "2025-08-28",
+    "type": "tweet",
+    "title": "Backroom Tease!",
+    "tweetUrl": "https://x.com/ScrapletUK/status/1873345601771073780"
+  },
+  {
+    "id": "a-004",
+    "date": "2025-08-31",
+    "type": "video",
+    "title": "Intro Teaser Concept",
+    "youtubeUrl": "https://www.youtube.com/watch?v=7g_ibvgYp28"
+  }
+]

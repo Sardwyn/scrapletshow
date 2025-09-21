@@ -1,0 +1,48 @@
+---
+const {
+  clientId = import.meta.env.PUBLIC_DISCORD_CLIENT_ID,
+  redirect = import.meta.env.PUBLIC_DISCORD_REDIRECT_URI,
+  scope = 'identify',
+} = Astro.props || {};
+
+const authBase = 'https://discord.com/api/oauth2/authorize';
+const loginUrl = `${authBase}?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirect)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
+---
+
+<div class="discord-login flex items-center gap-3 text-sm text-white">
+  Loading login…
+</div>
+
+<script is:client>
+  // Get the container that belongs to THIS component instance
+  const container = document.currentScript?.previousElementSibling;
+  if (!container) console.warn('[DiscordLogin] container not found');
+
+  function render() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem('discordUser') || 'null'); } catch {}
+
+    if (!container) return;
+    if (user) {
+      container.innerHTML = `
+        <span class="text-white/80">Logged in as</span>
+        <span class="px-2 py-1 bg-black/40 border border-pink rounded">${user.username}#${user.discriminator ?? '0000'}</span>
+        <button class="px-3 py-1 bg-pink text-black font-bold rounded" data-action="logout">Logout</button>
+      `;
+      container.querySelector('[data-action="logout"]').addEventListener('click', () => {
+        localStorage.removeItem('discordUser');
+        location.reload();
+      });
+    } else {
+      // Save where the user came from so callback can send them back
+      container.innerHTML = `
+        <a href="${encodeURI(loginUrl)}" class="px-3 py-1 bg-neonGreen text-black font-bold rounded" data-action="login">Login with Discord</a>
+      `;
+      container.querySelector('[data-action="login"]').addEventListener('click', () => {
+        try { sessionStorage.setItem('preLoginUrl', location.href); } catch {}
+      });
+    }
+  }
+
+  render();
+</script>

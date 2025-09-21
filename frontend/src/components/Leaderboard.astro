@@ -1,0 +1,80 @@
+---
+/* Server: render a skeleton container */
+---
+<section class="max-w-3xl mx-auto px-4 py-8 text-white">
+  <h2 class="text-xl font-bold mb-4">Leaderboard</h2>
+  <div id="lb-root" class="text-white/70">Loading leaderboard…</div>
+</section>
+
+<script is:client>
+(() => {
+  const root = document.getElementById('lb-root');
+  if (!root) return;
+
+  function renderList(rows) {
+    if (!rows || rows.length === 0) {
+      root.innerHTML = `<div class="text-white/70">No scores yet — be the first to guess!</div>`;
+      return;
+    }
+    const items = rows.map((row, idx) => `
+      <li class="flex justify-between items-center bg-black/40 border border-pink rounded px-3 py-2"
+          data-username="${row.username}">
+        <span class="font-mono">${idx + 1}.</span>
+        <span class="flex-1 px-3 name">${row.username}</span>
+        <span class="font-bold text-neonGreen points">${row.points}</span>
+      </li>
+    `).join('');
+
+    root.innerHTML = `<ol class="space-y-2">${items}</ol>`;
+  }
+
+  function highlightMe() {
+    try {
+      const du = JSON.parse(localStorage.getItem('discordUser') || 'null');
+      if (!du) return;
+      const me = `${du.username}#${du.discriminator ?? '0000'}`;
+      root.querySelectorAll('li[data-username]').forEach((li) => {
+        if (li.dataset.username === me) {
+          li.classList.add('ring-2','ring-neonGreen');
+          const name = li.querySelector('.name');
+          if (name && !name.querySelector('.you-tag')) {
+            const tag = document.createElement('span');
+            tag.className = 'you-tag ml-2 text-xs text-white/70';
+            tag.textContent = '(you)';
+            name.appendChild(tag);
+          }
+        }
+      });
+    } catch {}
+  }
+
+  async function load() {
+    try {
+      const res = await fetch('/api/leaderboard', { headers: { accept: 'application/json' } });
+      if (!res.ok) throw new Error('bad status');
+      const data = await res.json();
+      renderList(data);
+      highlightMe();
+      // Bridge: show your local score if API is empty
+      if (!data || data.length === 0) {
+        const du = JSON.parse(localStorage.getItem('discordUser') || 'null');
+        const score = parseInt(localStorage.getItem('prophecyScore') || '0', 10);
+        if (du) {
+          root.insertAdjacentHTML('beforeend',
+            `<div class="mt-3 text-xs text-white/70">Your stored score: ${score}. Keep playing!</div>`);
+        }
+      }
+    } catch {
+      renderList([]);
+      const du = JSON.parse(localStorage.getItem('discordUser') || 'null');
+      const score = parseInt(localStorage.getItem('prophecyScore') || '0', 10);
+      if (du) {
+        root.insertAdjacentHTML('beforeend',
+          `<div class="mt-3 text-xs text-white/70">Your stored score: ${score}. Keep playing!</div>`);
+      }
+    }
+  }
+
+  load();
+})();
+</script>

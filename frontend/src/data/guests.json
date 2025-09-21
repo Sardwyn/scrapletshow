@@ -1,0 +1,81 @@
+[
+  {
+    "slug": "yourbudde",
+    "name": "YourBudde",
+    "handle": "yourbudde",
+    "platform": "Kick",
+    "avatar": "/images/guests/yourbudde.png",
+    "banner": "/images/guests/thekingdom.jfif",
+    "appearing": "2025-08-29T20:00:00-22:00",
+    "bio": "Variety streamer with that chaotic scandi-good energy. Leader of the Ratjam Kingdom and collector of streaming soccer-moms, he will welcome you to the Budde clan and claim your his millionth follower — all to the backing track of 'The Ratlin Bog'. Confused? You probably should be. He may indeed have 45 million in 'The Kingdom' but this is Kick so who really knows? We just roll with it.",
+    "origin": "Started on Twitch. It sucked. Came to Kick, hasn’t looked back (or slept) since.",
+    "specialties": ["FPS", "Just Chatting", "Soccer-moms", "Ale"],
+    "picks": {
+      "song": "Ratlin Bog",
+      "movie": "The Thing (1982)",
+      "game": "COD - Warzone"
+    },
+    "links": {
+      "kick": "https://kick.com/yourbudde",
+      "twitter": "https://twitter.com/yourbudde",
+      "discord": "https://discord.gg/gTnExN85",
+      "merch": "https://buddekingdom.myspreadshop.com/"
+    },
+    "clips": [
+      {
+        "title": "Peak chaos highlight",
+        "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "poster": "/images/guests/yourbudde_clip1.jpg",
+        "duration": "00:36"
+      }
+    ],
+    "fun": {
+      "firstAppearance": "S1.Ep 1 'Insert Coin for Prophecy'",
+      "award": "Most Likely To Trigger Zoltar"
+    }
+  },
+  {
+    "slug": "Pr3s5ure",
+    "name": "Pr3s5ure",
+    "handle": "Pr3s5ure",
+    "platform": "Kick",
+    "avatar": "/images/guests/Pr3s5ure.jpeg",
+    "banner": "/images/guests/banner.png",
+    "appearing": "2025-08-31T20:00:00-22:00",
+    "bio": "5x Billboard-charting producer turned full-throttle streamer, Pr3s5ure brings a studio-grade swagger to the zero-build Fortnite grind. Sponsored by Wraith and powered by a dual-rig beast setup, he’s not just mid at Fortnite — he’s mid with style. Whether he's mashing buttons or dropping clips, his chat is a no-toxicity zone with high vibes and even higher ping-reduction tech. California-born, Discord-fueled, and always ready to flex controller finesse, Pr3s5ure is the kind of creator who can drop a beat and a squad in the same breath.",
+    "origin": "From Billboard to Battle-bus, Pr3s5ure never drops solo.",
+    "specialties": ["FPS", "Fortnite", "Music Production", "So fly PanAm should give him a job"],
+    "picks": {
+      "song": "Ratlin Bog",
+      "movie": "Bad Boys",
+      "game": "Fortnite"
+    },
+    "links": {
+      "kick": "https://kick.com/pr3s5ure",
+      "tiktok": "https://www.tiktok.com/@pr3s5ure_",
+      "insta": "https://www.instagram.com/pr3s5ure_/"
+    }
+  },
+  {
+    "slug": "Berkel",
+    "name": "https://kick.com/berkel",
+    "handle": "Berkel",
+    "platform": "Kick",
+    "avatar": "/images/guests/berkel.jpeg",
+    "banner": "/images/guests/berkelbanner.jfif",
+    "appearing": "2025-08-30T20:00:00-22:00",
+    "bio": "Welcome to Berktopia, where the signal is strong and the takes are stronger. As a verified Kick Partner and unapologetic alien, Berkel streams with zero filters and maximum frequency. Whether he’s tanking lakes IRL or dropping .69¢ truths on trending drama, Berkel’s feed is a mix of chaos, charisma, and community. He’s not just part of the show—he is the show.",
+    "origin": "Broadcasting from Berktopia. No apologies. No safe zones. Just signal.",
+    "specialties": ["IRL", "Fishing", "Berktopian Adventures"],
+    "picks": {
+      "song": "Ratlin Bog",
+      "movie": "Independence Day",
+      "game": "Fortnite"
+    },
+    "links": {
+      "kick": "https://kick.com/berkel",
+      "X": "https://x.com/Berkel_Official",
+      "Web": "https://www.berktopia.com/"
+    }
+  }
+]

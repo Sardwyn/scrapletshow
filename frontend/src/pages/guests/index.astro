@@ -1,0 +1,53 @@
+---
+import Layout from '../../layouts/layout.astro';
+import GUESTS from '../../data/guests.json';
+---
+
+<Layout title="Zoltar's Rogue Gallery">
+  <section class="max-w-6xl mx-auto px-4 py-8 text-white">
+    <h1 class="text-3xl font-black mb-6 text-shadow-pink">Zoltar’s Rogue Gallery</h1>
+    <p class="text-white/70 mb-8">
+      Behold the illustrious (and occasionally suspicious) lineup of guests who have dared to enter The Scraplet Show arena.
+      Click on a card to read their full dossier.
+    </p>
+
+    {Array.isArray(GUESTS) && GUESTS.length > 0 ? (
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {GUESTS.map((g) => (
+          <a
+            href={`/guests/${g.slug}`}
+            class="group block bg-black/30 border border-pink/60 rounded-xl overflow-hidden shadow-xl hover:border-neonGreen hover:scale-[1.02] transition-transform"
+          >
+            <div class="relative">
+              <img
+                src={g.banner || '/images/retro-tv-placeholder.png'}
+                alt={`${g.name} banner`}
+                class="w-full h-40 object-cover"
+                loading="lazy"
+                onerror="this.src='/images/retro-tv-placeholder.png'"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+              <img
+                src={g.avatar || '/images/retro-tv-placeholder.png'}
+                alt={`${g.name} avatar`}
+                class="absolute bottom-4 left-4 w-16 h-16 rounded-full border-2 border-pink object-cover"
+                onerror="this.src='/images/retro-tv-placeholder.png'"
+              />
+            </div>
+            <div class="p-4">
+              <h2 class="text-xl font-bold text-shadow-pink group-hover:text-neonGreen">{g.name}</h2>
+              <div class="text-white/70 text-sm mb-2">
+                {g.platform} • @{g.handle}
+              </div>
+              {g.bio && (
+                <p class="text-white/60 text-sm line-clamp-3">{g.bio}</p>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="text-white/70">No guests have been added yet…</div>
+    )}
+  </section>
+</Layout>

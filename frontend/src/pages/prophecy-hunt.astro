@@ -1,0 +1,233 @@
+---
+import Layout from '../layouts/layout.astro';
+import cluesByEpisode from '../data/prophecy-clues.json';
+import ClueCard from '../components/ClueCard.astro';
+import Leaderboard from '../components/Leaderboard.astro';
+
+// Pretty-label helper
+const toName = (id) =>
+  id.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+
+// Optional friendly names for artifacts
+const ARTIFACT_LABELS = {
+  stay_puft: 'Stay Puft Marshmallow Man',
+  bttf_poster: 'Back to the Future Movie Poster',
+  cap_shield: "Captain America's Shield",
+};
+
+// Episodes list
+const episodes = Object.keys(cluesByEpisode || {});
+const defaultEpisode = episodes[0] || 'Episode 1';
+
+// 🔒 Show unlock times (EDT / UTC-4). These are your air windows at 8:00pm EDT.
+// Clients in other timezones will see the correct local unlock based on these ISO offsets.
+const EPISODE_WINDOWS = {
+  'Episode 1': { startsAt: '2025-08-29T20:00:00-04:00' },
+  'Episode 2': { startsAt: '2025-08-30T20:00:00-04:00' },
+  'Episode 3': { startsAt: '2025-08-31T20:00:00-04:00' },
+  'Episode 4': { startsAt: '2025-09-05T20:00:00-04:00' },
+  'Episode 5': { startsAt: '2025-09-06T20:00:00-04:00' },
+  'Episode 6': { startsAt: '2025-09-07T20:00:00-04:00' },
+};
+---
+
+<Layout title="Prophecy Hunt">
+  <section class="max-w-6xl mx-auto px-4 py-8 text-white">
+    <h1 class="text-2xl sm:text-3xl font-black mb-6 tracking-wide">Prophecy Hunt</h1>
+
+    <!-- Responsive 2-col grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left: Episodes + Clues -->
+      <div class="lg:col-span-2">
+        <div class="mb-6 bg-black/30 border border-pink/60 rounded-xl p-4 shadow-xl">
+          <label for="episode" class="mr-2 block text-sm uppercase tracking-widest text-white/80 mb-2">
+            Episode
+          </label>
+          <select
+            id="episode"
+            name="episode"
+            class="bg-black text-white border border-pink px-3 py-2 rounded"
+          >
+            {episodes.map((ep) => (
+              <option value={ep} selected={ep === defaultEpisode}>{ep}</option>
+            ))}
+          </select>
+          <div id="episode-lock-hint" class="mt-2 text-xs text-white/60"></div>
+        </div>
+
+        <!-- Render ALL episodes; hide non-defaults at load -->
+        {episodes.map((ep) => {
+          const groups = Array.isArray(cluesByEpisode[ep]) ? cluesByEpisode[ep] : [];
+          const artifacts = groups.map((g) => ({
+            id: g.artifactId,
+            name: ARTIFACT_LABELS[g.artifactId] || toName(g.artifactId),
+          }));
+
+          return (
+            <div
+              class={`episode-block ${ep === defaultEpisode ? '' : 'hidden'}`}
+              data-episode={ep}
+            >
+              {groups.length === 0 ? (
+                <div class="text-white/70">No clues configured for {ep}.</div>
+              ) : (
+                <div class="flex flex-col gap-6">
+                  {groups.slice(0, 3).map((group) => (
+                    <ClueCard episode={ep} group={group} artifacts={artifacts} />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <!-- Right: Leaderboard card -->
+      <div>
+        <div class="bg-black/30 border-2 border-pink rounded-xl p-4 shadow-xl">
+          <h2 class="text-xl font-bold mb-4 tracking-wide text-shadow-pink">Leaderboard</h2>
+          <Leaderboard />
+          <!-- Local score line so the panel isn't empty during dev/offline -->
+          <div id="local-score" class="mt-4 text-xs text-white/70"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Client-side episode toggle + gating (IIFE so no top-level return issues) -->
+  <script is:client>
+  (() => {
+    const sel = document.getElementById('episode');
+    const hint = document.getElementById('episode-lock-hint');
+    const blocks = Array.from(document.querySelectorAll('.episode-block'));
+
+    // schedule from server (EDT times with -04:00 offsets)
+    const windows = JSON.parse(document.getElementById('episode-windows-json')?.textContent || '{}');
+
+    const now = () => Date.now();
+    const isUnlocked = (ep) => {
+      const w = windows[ep];
+      if (!w || !w.startsAt) return true;
+      return now() >= new Date(w.startsAt).getTime();
+    };
+
+    // share with ClueCard submit handler (guards guessing before unlock)
+    window.isEpisodeUnlocked = isUnlocked;
+
+    // Initialize from ?episode= if present
+    const params = new URLSearchParams(location.search);
+    const fromQS = params.get('episode');
+    if (fromQS && sel) sel.value = fromQS;
+
+    // Disable locked options and show hint
+    function refreshOptionStates() {
+      if (!sel) return;
+      Array.from(sel.options).forEach(o => {
+        const locked = !isUnlocked(o.value);
+        o.disabled = locked;
+      });
+
+      const current = sel.value;
+      const locked = !isUnlocked(current);
+      if (hint) {
+        if (locked) {
+          const startAt = windows[current]?.startsAt;
+          const when = startAt
+            ? new Date(startAt).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+            : 'later';
+          hint.textContent = `This episode unlocks at ${when}.`;
+        } else {
+          hint.textContent = '';
+        }
+      }
+    }
+
+    function show(ep) {
+      // if locked, block selection and toast + revert selection
+      if (!isUnlocked(ep)) {
+        const startAt = windows[ep]?.startsAt;
+        const when = startAt
+          ? new Date(startAt).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+          : 'later';
+        window.toast?.show?.(`That episode unlocks at ${when}.`, { buttonText: 'Got it', timeout: 3500 });
+        // revert to first unlocked option
+        const firstUnlocked = Array.from(sel.options).find(o => isUnlocked(o.value));
+        if (firstUnlocked) sel.value = firstUnlocked.value;
+        refreshOptionStates();
+        return;
+      }
+
+      // reveal chosen, hide others
+      blocks.forEach(b => {
+        b.classList.toggle('hidden', b.dataset.episode !== ep);
+      });
+
+      // update URL (optional)
+      const url = new URL(location.href);
+      url.searchParams.set('episode', ep);
+      history.replaceState(null, '', url.toString());
+
+      refreshOptionStates();
+    }
+
+    // On load: mark locked options, hide locked blocks immediately
+    refreshOptionStates();
+    blocks.forEach(b => { if (!isUnlocked(b.dataset.episode)) b.classList.add('hidden'); });
+
+    sel?.addEventListener('change', () => show(sel.value));
+
+    // pick current selection or first unlocked
+    const chosen = sel?.value;
+    if (chosen && isUnlocked(chosen)) show(chosen);
+    else {
+      const firstUnlocked = Array.from(sel?.options || []).find(o => isUnlocked(o.value))?.value || blocks[0]?.dataset.episode;
+      if (firstUnlocked) {
+        if (sel) sel.value = firstUnlocked;
+        show(firstUnlocked);
+      }
+    }
+  })();
+  </script>
+
+  <!-- Highlight the logged-in user + show local score as a bridge -->
+  <script is:client>
+  (() => {
+    try {
+      const du = JSON.parse(localStorage.getItem('discordUser') || 'null');
+      const score = parseInt(localStorage.getItem('prophecyScore') || '0', 10);
+
+      // Highlight me in leaderboard if present
+      if (du) {
+        const me = `${du.username}#${du.discriminator ?? '0000'}`;
+        document.querySelectorAll('li[data-username]').forEach((li) => {
+          if (li.dataset.username === me) {
+            li.classList.add('ring-2','ring-neonGreen');
+            const nameSpan = li.querySelector('.name') || li.querySelector('span:nth-of-type(2)');
+            if (nameSpan && !nameSpan.querySelector('.you-tag')) {
+              const you = document.createElement('span');
+              you.className = 'you-tag ml-2 text-xs text-white/70';
+              you.textContent = '(you)';
+              nameSpan.appendChild(you);
+            }
+          }
+        });
+      }
+
+      // Local score line (handy until the API is live everywhere)
+      const local = document.getElementById('local-score');
+      if (local) {
+        if (du) {
+          local.textContent = `Your stored score: ${score} — log more correct guesses to climb the board.`;
+        } else {
+          local.textContent = 'Log in with Discord to track your score on the leaderboard.';
+        }
+      }
+    } catch {}
+  })();
+  </script>
+
+  <!-- Embed schedule for client gating -->
+  <script type="application/json" id="episode-windows-json">
+    {JSON.stringify(EPISODE_WINDOWS)}
+  </script>
+</Layout>

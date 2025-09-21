@@ -1,0 +1,358 @@
+---
+import PressPlayTarot from '../components/PressPlayTarot.astro';
+import GUESTS from '../data/guests.json';
+
+// Pick who to show (first 5 by default; tweak as you like)
+const featured = (Array.isArray(GUESTS) ? GUESTS.slice(0, 5) : []);
+---
+<html>
+  <head>
+    <title>The Scraplet Show</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <style>
+      .flicker {
+        animation: flicker 1.5s infinite alternate;
+      }
+
+      @keyframes flicker {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+        70% { opacity: 0.3; }
+      }
+
+      .blink-dot {
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        border-radius: 50%;
+        animation: blink 1s infinite;
+        margin-right: 0.5rem;
+      }
+
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
+      }
+
+      .vhs-wrapper::before {
+        opacity: 0.06 !important;
+      }
+    </style>
+
+
+
+  </head>
+  <body style="background-color: #3b0a67;" class="text-white font-neon px-4 sm:px-6 md:px-12 py-6 md:py-12 relative overflow-x-hidden">
+    <div class="relative z-10 max-w-6xl mx-auto">
+      <header class="text-3xl sm:text-5xl md:text-7xl leading-snug font-neon text-neonGreen text-shadow-neon mb-10 flicker text-center -mt-[25px]">
+
+        <div>The</div>
+        <div>Scraplet</div>
+        <div>Show</div>
+      </header>
+
+<nav class="mb-12 text-neonGreen font-neon text-sm sm:text-base tracking-widest text-center">
+  <ul class="flex justify-center gap-8 flex-wrap">
+    <li>
+      <a
+        href="/"
+        class={`hover:text-pink ${Astro.url.pathname === '/' ? 'text-pink underline' : ''}`}
+      >
+        Home
+      </a>
+    </li>
+    <li>
+      <a
+        href="/gallery"
+        class={`hover:text-pink ${Astro.url.pathname.startsWith('/gallery') ? 'text-pink underline' : ''}`}
+      >
+        Episodes
+      </a>
+    </li>
+    <li>
+      <a
+        href="/guests"
+        class={`hover:text-pink ${Astro.url.pathname.startsWith('/guests') ? 'text-pink underline' : ''}`}
+      >
+        Show Guests
+      </a>
+    </li>
+    <li>
+      <a
+        href="/zoltar-log"
+        class={`hover:text-pink ${Astro.url.pathname.startsWith('/zoltar') ? 'text-pink underline' : ''}`}
+      >
+        Ask Zoltar
+      </a>
+    </li>
+    <li>
+      <a
+        href="prophecy-hunt"
+        class={`hover:text-pink ${Astro.url.pathname === '/prophecy-hunt' ? 'text-pink underline' : ''}`}
+      >
+        Prophecy-Hunt
+      </a>
+    </li>
+  </ul>
+</nav>
+
+
+      <!-- 🔻 FULL-WIDTH SHOW STATUS BAR -->
+      <div class="w-full px-4 sm:px-6 md:px-12 mt-[25px] mb-4">
+        <div id="show-status" class="max-w-6xl mx-auto flex justify-between items-center text-sm font-bold tracking-widest">
+          <div id="live-indicator" class="flex items-center space-x-2 text-neonGreen"></div>
+          <div id="episode-label" class="text-pink text-right"></div>
+        </div>
+      </div>
+
+      <!-- 🔀 ZOLTAR & EPISODE SIDE BY SIDE -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 🟣 ZOLTAR PROPHECY -->
+        <section class="p-4 sm:p-6 bg-black/40 border-2 border-pink rounded-xl shadow-2xl backdrop-blur-sm hover:scale-[1.02] transition-transform flex flex-col justify-center">
+          <h2 class="text-2xl mb-4 text-pink text-shadow-pink text-center">
+            Zoltar's Prophecy for <span id="zoltar-date">[loading]</span>
+          </h2>
+          <div class="flex-1 flex items-center justify-center">
+            <div class="bg-black/30 p-4 border border-pink rounded font-mono tracking-wide text-lg text-center">
+              "Chaos will find you where comfort hides..."
+            </div>
+          </div>
+        </section>
+
+        <!-- 🟢 EPISODE -->
+        <section class="p-4 sm:p-6 bg-black/40 border-2 border-neonGreen rounded-xl shadow-2xl backdrop-blur-sm hover:scale-[1.02] transition-transform">
+          <h2 class="text-2xl mb-8 text-neonGreen text-shadow-neon">Latest Episode</h2>
+          <div class="grid grid-cols-1 gap-6 items-center">
+            <div class="flex justify-center">
+              <img src="/images/tv.png" alt="Retro TV" class="w-full max-w-[280px] md:max-w-sm" />
+            </div>
+            <div class="text-center md:text-left">
+              <p class="text-white/90 text-lg mb-2">Insert Coin to Prophecy with special guest <a href="http://kick.com/yourbudde" target="_blank">YourBudde</a>.</p>
+              <a href="/gallery" class="inline-block px-4 py-2 bg-neonGreen text-black font-bold rounded hover:bg-pink transition whitespace-nowrap">Watch Episode</a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 🔮 ASK ZOLTAR FULL WIDTH -->
+      <section class="max-w-6xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 p-4 sm:p-6 bg-black/40 border-2 border-pink rounded-xl shadow-2xl backdrop-blur-sm hover:scale-[1.02] transition-transform">
+        <div class="flex justify-center items-center">
+          <img src="/images/zoltar.png" alt="Zoltar" class="w-full max-w-[280px] md:max-w-sm rounded shadow-lg hover:animate-jiggle" id="zoltar-img" />
+        </div>
+        <div class="vhs-wrapper flex flex-col justify-center items-center text-center" style="filter: url(#rgbShift);">
+          <h2 class="text-2xl mb-4 text-pink text-shadow-pink">Ask Zoltar</h2>
+          <p class="text-white/80 mb-4 text-lg">Beware unsolicited chat app invites.</p>
+          <a href="https://discord.gg/aV43m9Y4" target="_blank" class="inline-block px-6 py-3 bg-pink text-black font-bold rounded-lg hover:bg-neonGreen hover:text-black transition transform hover:scale-105">Join The Scrapyard Discord</a>
+          <div id="zoltar-prediction" class="mt-4 text-white/70 font-mono text-base"></div>
+        </div>
+      </section>
+
+      <!-- 🎨 FAN ART ZONE -->
+      <section class="max-w-6xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 p-4 sm:p-6 bg-black/40 border-2 border-pink rounded-xl shadow-2xl backdrop-blur-sm hover:scale-[1.02] transition-transform">
+        <div>
+          <h2 class="text-2xl mb-4 text-pink text-shadow-pink">Fan Art Zone</h2>
+          <p class="text-white/80 mb-4 text-lg">Explore community creations, cursed artifacts, and tribute posters.</p>
+          <a href="/fan-art" class="inline-block px-6 py-3 bg-pink text-black font-bold rounded-lg hover:bg-neonGreen hover:text-black transition transform hover:scale-105">Enter Gallery</a>
+        </div>
+        <div class="flex justify-center">
+          <img src="/images/fan-art-preview.png" alt="Fan Art Preview" class="rounded-lg shadow-md w-full max-w-sm" />
+        </div>
+      </section>
+
+      <!-- 🦴 PRESS PLAY -->
+<section class="max-w-6xl mx-auto mt-12 p-4 sm:p-6 bg-black/40 border-2 border-pink rounded-xl shadow-2xl backdrop-blur-sm hover:scale-[1.02] transition-transform">
+  <div class="flex flex-col md:flex-row justify-between items-start gap-6">
+    
+    <!-- Text Block -->
+    <div class="flex-1">
+      <h2 class="text-2xl mb-4 text-pink text-shadow-pink">Press Play</h2>
+      <p class="text-white/80 mb-4 text-lg">Our creator guests' picks, saved for cultural ridicule. We invite a KICK creator to showcase their cultural influences. You decide who's profile tops Zoltars tier list at the end of the season!</p>
+      <a href="/guests" class="inline-block px-6 py-3 bg-pink text-black font-bold rounded-lg hover:bg-neonGreen hover:text-black transition transform hover:scale-105">Enter Gallery</a>
+    </div>
+
+    <!-- Right column: Tarot fan -->
+<div class="w-[550px] max-w-full">
+  <PressPlayTarot guests={featured} />
+</div>
+
+
+
+</section>
+    <footer class="mt-12 py-6 text-center text-xs border-t border-pink/40 text-neonGreen flicker">
+      <p class="tracking-wider">
+        Scraplet Broadcasting Corporation 2025 - All Rights Reserved
+      </p>
+    </footer>
+
+
+    <script>
+      document.getElementById('zoltar-date').textContent =
+        new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+
+      const showSchedule = [
+        { date: "2025-08-29T20:00:00", season: 1, episode: "Insert Coin for Prophecy" },
+        { date: "2025-08-30T20:00:00", season: 1, episode: "Minor Glitch, Major Prophecy" },
+        { date: "2025-08-31T20:00:00", season: 1, episode: "Echo Chamber FM" },
+        { date: "2025-09-05T20:00:00", season: 1, episode: "Broadcast:Interrupted" },
+        { date: "2025-09-06T20:00:00", season: 1, episode: "Deja View" },
+        { date: "2025-09-07T20:00:00", season: 1, episode: "It came from the Sidebar" },
+        { date: "2025-09-12T20:00:00", season: 1, episode: "Ctrl - Zoltar - Delete" },
+        { date: "2025-09-13T20:00:00", season: 1, episode: "Ascension Protocol: Showstopper" }
+      ].map(show => ({ ...show, start: new Date(show.date) }));
+
+      const showLengthMs = 2 * 60 * 60 * 1000;
+      const now = () => new Date();
+
+      const liveIndicatorEl = document.getElementById('live-indicator');
+      const episodeLabelEl = document.getElementById('episode-label');
+
+      function updateShowStatus() {
+        const nowTime = now();
+        let found = false;
+
+        for (let i = 0; i < showSchedule.length; i++) {
+          const show = showSchedule[i];
+          const end = new Date(show.start.getTime() + showLengthMs);
+
+          if (nowTime < show.start) {
+            showCountdown(show);
+            found = true;
+            break;
+          } else if (nowTime >= show.start && nowTime <= end) {
+            showLive(show);
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) {
+          liveIndicatorEl.innerHTML = `<span class="text-pink">Show season ended</span>`;
+          episodeLabelEl.textContent = '';
+        }
+      }
+
+      function showCountdown(show) {
+        episodeLabelEl.textContent = `Season ${show.season}, Episode: ${show.episode}`;
+
+        function updateCountdown() {
+          const diff = show.start - now();
+          if (diff <= 0) {
+            updateShowStatus();
+            return;
+          }
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hrs = Math.floor((diff / (1000 * 60 * 60)) % 24);
+          const mins = Math.floor((diff / (1000 * 60)) % 60);
+          const secs = Math.floor((diff / 1000) % 60);
+
+          liveIndicatorEl.innerHTML = `<span>Next show in ${days}d ${hrs}h ${mins}m ${secs}s</span>`;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+
+      function showLive(show) {
+        episodeLabelEl.textContent = `Season ${show.season}, Episode ${show.episode}`;
+        liveIndicatorEl.innerHTML = `
+          <div class="blink-dot"></div>
+          <span>LIVE</span>
+        `;
+        setTimeout(() => updateShowStatus(), showLengthMs);
+      }
+
+      updateShowStatus();
+
+      const zoltar = document.getElementById('zoltar-img');
+      const predictionBox = document.getElementById('zoltar-prediction');
+      const predictions = [
+        "Your destiny awaits on Discord...",
+        "A server in the mist calls your name.",
+        "Only the chosen shall enter. Click wisely.",
+        "The prophecy is strong in the Scraplet channel.",
+        "Join the ritual. It's... compulsory."
+      ];
+
+      zoltar.addEventListener('mouseenter', () => {
+        const msg = predictions[Math.floor(Math.random() * predictions.length)];
+        predictionBox.textContent = msg;
+      });
+    </script>
+
+
+    </div> <!-- closes your main container -->
+
+    <!-- 🔳 VHS Scanline Overlay -->
+    <div class="scanline-overlay"></div>
+<style>
+  .scanline-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.2) 0px,
+      rgba(255, 255, 255, 0.2) 3px,
+      transparent 3px,
+      transparent 8px
+    );
+    opacity: 0.5;
+    background-size: 100% 200px;
+
+  }
+
+  @keyframes flickerScan {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.6; }
+  }
+
+  @keyframes vhsJitter {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(1px); }
+}
+
+.scanline-overlay {
+  animation: flickerScan 0.3s infinite, vhsJitter 0.25s infinite, scanline-scroll 10s linear infinite;
+}
+
+@keyframes scanline-scroll {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+</style>
+
+
+
+
+    <!-- 🎛 CRT Filter Definition -->
+    <svg width="0" height="0" style="position: absolute;">
+      <filter id="rgbShift">
+        <feOffset in="SourceGraphic" dx="1" dy="0" result="r" />
+        <feOffset in="SourceGraphic" dx="-1" dy="0" result="b" />
+        <feMerge>
+          <feMergeNode in="r" />
+          <feMergeNode in="SourceGraphic" />
+          <feMergeNode in="b" />
+        </feMerge>
+      </filter>
+    </svg>
+  </body>
+</html>
+
+
+
+
+

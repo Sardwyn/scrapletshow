@@ -1,0 +1,168 @@
+---
+import GUESTS from '../data/guests.json';
+
+// Props (optional): pass a filtered list; default = first 5 guests
+const { guests = (Array.isArray(GUESTS) ? GUESTS.slice(0, 5) : []) } = Astro.props;
+
+// Simple helpers
+const fmtDate = (iso) =>
+  iso ? new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
+---
+<div class="tarot-wrap my-10">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-xl font-bold text-shadow-pink">Choose your Creator</h3>
+    <button id="reveal-all" class="px-3 py-1 bg-neonGreen text-black font-bold rounded text-sm">
+      Reveal All
+    </button>
+  </div>
+
+  <div class="tarot-fan relative mx-auto" aria-label="Guest tarot cards">
+    {guests.map((g, i) => (
+      <a
+        href={`/guests/${g.slug}`}
+        class="tarot-card group"
+        style={`--i:${i};`}
+        data-slug={g.slug}
+        aria-label={`Reveal ${g.name}`}
+      >
+        <!-- 3D stack -->
+        <div class="inner">
+          <!-- Back face -->
+          <div class="face back">
+            <img
+              src="/images/ui/tarot-back.png"
+              alt="Tarot card back"
+              class="w-full h-full object-cover"
+              loading="lazy"
+              onerror="this.src='/images/retro-tv-placeholder.png'"
+            />
+          </div>
+
+          <!-- Front face (guest) -->
+          <div class="face front">
+            <div class="h-full w-full bg-black/50 border-2 border-pink rounded-xl overflow-hidden">
+              <div class="h-36 bg-black/60 relative">
+                <img
+                  src={g.avatar || '/images/retro-tv-placeholder.png'}
+                  alt={`${g.name} avatar`}
+                  class="absolute inset-0 w-full h-full object-cover opacity-90"
+                  onerror="this.src='/images/retro-tv-placeholder.png'"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                <div class="absolute bottom-2 left-2 text-xs px-2 py-1 bg-black/70 border border-pink rounded">
+                  {fmtDate(g.appearing) || 'Soon™'}
+                </div>
+              </div>
+              <div class="p-3">
+                <div class="font-bold text-shadow-pink">{g.name}</div>
+                <div class="text-xs text-white/60 mb-2">{g.platform} • @{g.handle}</div>
+                {g.picks && (
+                  <ul class="text-xs text-white/80 space-y-1">
+                    {g.picks.song && <li>🎵 <span class="font-bold">{g.picks.song}</span></li>}
+                    {g.picks.movie && <li>🎬 <span class="font-bold">{g.picks.movie}</span></li>}
+                    {g.picks.game && <li>🎮 <span class="font-bold">{g.picks.game}</span></li>}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+  .tarot-fan {
+    width: min(700px, 95vw);
+    height: 280px;
+    perspective: 1200px; /* enables 3D flip */
+  }
+  .tarot-card {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 180px;
+    height: 260px;
+    transform-style: preserve-3d;
+    transform-origin: 50% 85%;
+    translate: -50% 0;
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+  }
+  /* Fan layout: tweak angles/offsets with CSS variables */
+  /* For up to 7 cards; add more rules if you show more */
+  .tarot-card { --spread: 50px; --angle: 12deg; }
+  .tarot-card[style*="--i:0"] { transform: translateX(calc(-2*var(--spread))) rotateZ(calc(-2*var(--angle))); z-index: 3; }
+  .tarot-card[style*="--i:1"] { transform: translateX(calc(-1*var(--spread))) rotateZ(calc(-1*var(--angle))); z-index: 4; }
+  .tarot-card[style*="--i:2"] { transform: translateX(0) rotateZ(0deg); z-index: 5; }
+  .tarot-card[style*="--i:3"] { transform: translateX(var(--spread)) rotateZ(var(--angle)); z-index: 4; }
+  .tarot-card[style*="--i:4"] { transform: translateX(calc(2*var(--spread))) rotateZ(calc(2*var(--angle))); z-index: 3; }
+
+  /* On hover of the fan, increase spread a bit for drama */
+  .tarot-fan:hover .tarot-card { --spread: 60px; --angle: 14deg; }
+
+  /* 3D inner with faces */
+  .inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 550ms cubic-bezier(.2,.8,.2,1);
+    transform-style: preserve-3d;
+  }
+  .tarot-card:focus .inner,
+  .tarot-card.flipped .inner,
+  .tarot-card:focus-visible .inner {
+    transform: rotateY(180deg);
+  }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .front { transform: rotateY(180deg); }
+  .back  { transform: rotateY(0deg); }
+
+  /* Small screens: shrink a bit */
+  @media (max-width: 480px) {
+    .tarot-card { width: 150px; height: 220px; }
+    .tarot-fan   { height: 240px; }
+  }
+</style>
+
+<script is:client>
+(() => {
+  const cards = Array.from(document.querySelectorAll('.tarot-card'));
+  const revealAll = document.getElementById('reveal-all');
+
+  cards.forEach((card) => {
+    // Click toggles flip
+    card.addEventListener('click', (e) => {
+      // If you want click to navigate to the guest page ONLY when front is showing,
+      // you can detect the class and prevent here. For now we flip AND allow link on second click.
+      card.classList.toggle('flipped');
+      // Prevent instant navigation on first click so users see the flip
+      if (card.classList.contains('flipped')) e.preventDefault();
+    });
+
+    // Keyboard accessibility
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        card.classList.toggle('flipped');
+      }
+    });
+  });
+
+  // Reveal all button
+  revealAll?.addEventListener('click', () => {
+    const someUnflipped = cards.some(c => !c.classList.contains('flipped'));
+    cards.forEach(c => c.classList.toggle('flipped', someUnflipped));
+  });
+})();
+</script>

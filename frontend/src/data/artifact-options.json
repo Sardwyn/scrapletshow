@@ -1,0 +1,33 @@
+[
+  { "id": "flux_capacitor", "name": "Flux Capacitor" },
+  { "id": "nuka_cola_fridge", "name": "Nuka Cola Fridge" },
+  { "id": "stay_puft", "name": "Stay Puft Marshmallow Man" },
+
+  { "id": "hoverboard", "name": "Marty's Hoverboard" },
+  { "id": "avengers_lunchbox", "name": "Avengers Lunch Box" },
+  { "id": "bttf_poster", "name": "Back to the Future Poster" },
+
+  { "id": "sega_master_system", "name": "Sega Master System" },
+  { "id": "nuka_cola_can", "name": "Nuka Cola Can" },
+  { "id": "duck_hunt_cart", "name": "Duck Hunt NES Cartridge" },
+
+  { "id": "terminator_poster", "name": "The Terminator Poster" },
+  { "id": "bladerunner_whisky", "name": "Johnnie Walker Black – Blade Runner" },
+  { "id": "r2d2", "name": "R2-D2" },
+
+  { "id": "delorean", "name": "DeLorean" },
+  { "id": "sword_of_omens", "name": "Sword of Omens" },
+  { "id": "robocop_poster", "name": "RoboCop Poster" },
+
+  { "id": "top_gun_poster", "name": "Top Gun Poster" },
+  { "id": "mavericks_aviators", "name": "Maverick’s Aviators" },
+  { "id": "mavericks_jacket", "name": "Maverick’s Pilot Jacket" },
+
+  { "id": "matrix_of_leadership", "name": "Autobot Matrix of Leadership" },
+  { "id": "transformers_1986_poster", "name": "Transformers (1986) Poster" },
+  { "id": "optimus_prime", "name": "Optimus Prime" },
+
+  { "id": "cap_shield", "name": "Captain America’s Shield" },
+  { "id": "thundercats_logo", "name": "ThunderCats Logo" },
+  { "id": "avengers_logo", "name": "Avengers Logo" }
+]

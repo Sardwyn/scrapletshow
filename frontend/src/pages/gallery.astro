@@ -1,0 +1,292 @@
+---
+import Layout from '../layouts/layout.astro';
+
+/**
+ * Mock content—swap this with your real data source later (CMS, JSON, etc.)
+ * Each episode can have any combo of: youtubeId, vodUrl, mp4Url (self-hosted), poster.
+ */
+const EPISODES = [
+  {
+    id: 'ep1',
+    title: 'Episode 1 — The Smiling Cataclysm',
+    date: '2025-08-29',
+    poster: '/images/episodes/ep1_poster.jpg',
+    youtubeId: 'dQw4w9WgXcQ',
+    vodUrl: 'https://vod.example.com/the-smiling-cataclysm',
+    mp4Url: '/media/episodes/ep1_1080p.mp4',
+    duration: '47:12'
+  },
+  {
+    id: 'ep2',
+    title: 'Episode 2 — The Temporal Detour',
+    date: '2025-08-30',
+    poster: '/images/episodes/ep2_poster.jpg',
+    youtubeId: 'a1b2c3d4e5',
+    vodUrl: '',
+    mp4Url: '/media/episodes/ep2_1080p.mp4',
+    duration: '49:03'
+  },
+  {
+    id: 'ep3',
+    title: 'Episode 3 — Marshmallow Siege',
+    date: '2025-08-31',
+    poster: '/images/episodes/ep3_poster.jpg',
+    youtubeId: '',
+    vodUrl: 'https://vod.example.com/marshmallow-siege',
+    mp4Url: '',
+    duration: '46:27'
+  },
+];
+
+const PROVIDER_LABELS = {
+  youtube: 'YouTube',
+  vod: 'VOD',
+  mp4: 'Self‑Hosted',
+};
+---
+
+<Layout title="Gallery">
+  <section class="max-w-6xl mx-auto px-4 py-8 text-white">
+    <h1 class="text-2xl sm:text-3xl font-black mb-6 tracking-wide">Gallery</h1>
+
+    <!-- Controls -->
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-black/30 border border-pink/60 rounded-xl p-4">
+        <label class="block text-xs uppercase tracking-widest text-white/70 mb-2">Search</label>
+        <input id="search" type="text" placeholder="Find an episode…"
+          class="w-full bg-black text-white border border-pink rounded px-3 py-2" />
+      </div>
+
+      <div class="bg-black/30 border border-pink/60 rounded-xl p-4">
+        <label class="block text-xs uppercase tracking-widest text-white/70 mb-2">Provider</label>
+        <select id="provider"
+          class="w-full bg-black text-white border border-pink rounded px-3 py-2">
+          <option value="auto" selected>Auto (best available)</option>
+          <option value="youtube">YouTube</option>
+          <option value="vod">VOD</option>
+          <option value="mp4">Self‑Hosted</option>
+        </select>
+      </div>
+
+      <div class="bg-black/30 border border-pink/60 rounded-xl p-4">
+        <label class="block text-xs uppercase tracking-widest text-white/70 mb-2">Sort</label>
+        <select id="sort"
+          class="w-full bg-black text-white border border-pink rounded px-3 py-2">
+          <option value="date-desc" selected>Newest first</option>
+          <option value="date-asc">Oldest first</option>
+          <option value="title-asc">Title A–Z</option>
+          <option value="title-desc">Title Z–A</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div id="gallery-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {EPISODES.map((ep) => (
+        <article
+          class="bg-black/30 border-2 border-pink rounded-xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow"
+          data-episode-id={ep.id}
+          data-title={ep.title.toLowerCase()}
+          data-date={ep.date}
+          data-hasyoutube={String(!!ep.youtubeId)}
+          data-hasvod={String(!!ep.vodUrl)}
+          data-hasmp4={String(!!ep.mp4Url)}
+        >
+          <div class="relative">
+            <img
+              src={ep.poster || '/images/retro-tv-placeholder.png'}
+              alt={ep.title}
+              class="w-full h-48 object-cover"
+              loading="lazy"
+              onerror="this.src='/images/retro-tv-placeholder.png'"
+            />
+            {ep.duration && (
+              <div class="absolute bottom-2 right-2 text-xs bg-black/70 px-2 py-1 rounded">
+                {ep.duration}
+              </div>
+            )}
+          </div>
+
+          <div class="p-4">
+            <h3 class="font-bold mb-1">{ep.title}</h3>
+            <div class="text-xs text-white/60 mb-3">
+              {new Date(ep.date).toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'})}
+            </div>
+
+            <div class="flex items-center gap-2">
+              {/* Preferred play button (provider chosen in script) */}
+              <button
+                class="play-btn px-3 py-2 bg-neonGreen text-black font-bold rounded"
+                data-youtube={ep.youtubeId}
+                data-vod={ep.vodUrl}
+                data-mp4={ep.mp4Url}
+                data-title={ep.title}
+              >
+                ▶ Play
+              </button>
+
+              {/* Quick pick menu for explicit source selection */}
+              <div class="ml-auto flex gap-2">
+                {ep.youtubeId && <button class="src-btn px-2 py-1 border border-pink rounded text-xs" data-src="youtube" data-youtube={ep.youtubeId} data-title={ep.title}>YouTube</button>}
+                {ep.vodUrl && <button class="src-btn px-2 py-1 border border-pink rounded text-xs" data-src="vod" data-vod={ep.vodUrl} data-title={ep.title}>VOD</button>}
+                {ep.mp4Url && <button class="src-btn px-2 py-1 border border-pink rounded text-xs" data-src="mp4" data-mp4={ep.mp4Url} data-title={ep.title}>MP4</button>}
+              </div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- Modal Player -->
+  <div id="video-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+    <div class="relative w-full max-w-4xl">
+      <button id="close-modal"
+        class="absolute -top-10 right-0 px-3 py-1 bg-pink text-black font-bold rounded">Close</button>
+      <div class="bg-black border-2 border-pink rounded-xl overflow-hidden shadow-2xl">
+        <div id="player-title" class="px-4 py-3 border-b border-pink/40 font-bold"></div>
+        <div id="player-slot" class="aspect-video bg-black"></div>
+        <div id="player-src" class="px-4 py-3 text-xs text-white/60"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client logic (search / sort / provider preference / modal) -->
+  <script is:client>
+  (() => {
+    const EP_LABELS = { youtube: 'YouTube', vod: 'VOD', mp4: 'Self‑Hosted' };
+    const grid = document.getElementById('gallery-grid');
+    const search = document.getElementById('search');
+    const sort = document.getElementById('sort');
+    const provider = document.getElementById('provider');
+
+    const modal = document.getElementById('video-modal');
+    const playerSlot = document.getElementById('player-slot');
+    const playerTitle = document.getElementById('player-title');
+    const playerSrc = document.getElementById('player-src');
+    const closeBtn = document.getElementById('close-modal');
+
+    function pickAutoSource(el) {
+      // Preferred order when "Auto" is selected
+      if (el.dataset.youtube) return { kind: 'youtube', value: el.dataset.youtube };
+      if (el.dataset.vod)     return { kind: 'vod',     value: el.dataset.vod };
+      if (el.dataset.mp4)     return { kind: 'mp4',     value: el.dataset.mp4 };
+      return null;
+    }
+
+    function buildPlayer({ kind, value }) {
+      // Clean previous content
+      playerSlot.innerHTML = '';
+      if (kind === 'youtube') {
+        const iframe = document.createElement('iframe');
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.allow =
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allowFullscreen = true;
+        iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(value)}?rel=0`;
+        playerSlot.appendChild(iframe);
+      } else if (kind === 'vod') {
+        // If your VOD is an embeddable page, iframe it; otherwise, redirect on click
+        const iframe = document.createElement('iframe');
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.src = value;
+        iframe.referrerPolicy = 'no-referrer';
+        playerSlot.appendChild(iframe);
+      } else if (kind === 'mp4') {
+        const video = document.createElement('video');
+        video.controls = true;
+        video.playsInline = true;
+        video.style.width = '100%';
+        video.style.height = '100%';
+        const src = document.createElement('source');
+        src.src = value;
+        src.type = 'video/mp4';
+        video.appendChild(src);
+        playerSlot.appendChild(video);
+      }
+      playerSrc.textContent = `Source: ${EP_LABELS[kind]}`;
+    }
+
+    function openModal(title, source) {
+      playerTitle.textContent = title || 'Episode';
+      buildPlayer(source);
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeModal() {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      playerSlot.innerHTML = '';
+    }
+
+    // Play buttons (auto provider or selected provider)
+    grid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.play-btn');
+      if (btn) {
+        const pref = provider?.value || 'auto';
+        let src = null;
+        if (pref === 'auto') src = pickAutoSource(btn.dataset);
+        if (pref === 'youtube' && btn.dataset.youtube) src = { kind:'youtube', value: btn.dataset.youtube };
+        if (pref === 'vod' && btn.dataset.vod)         src = { kind:'vod',     value: btn.dataset.vod };
+        if (pref === 'mp4' && btn.dataset.mp4)         src = { kind:'mp4',     value: btn.dataset.mp4 };
+
+        if (!src) {
+          window.toast?.show?.('No playable source for your selected provider.', { buttonText: 'Okay', timeout: 3000 });
+          return;
+        }
+        openModal(btn.dataset.title, src);
+      }
+
+      const srcBtn = e.target.closest('.src-btn');
+      if (srcBtn) {
+        const kind = srcBtn.dataset.src;
+        const value = srcBtn.dataset[kind];
+        if (!value) {
+          window.toast?.show?.('Source missing for this episode.', { buttonText: 'Okay', timeout: 3000 });
+          return;
+        }
+        openModal(srcBtn.dataset.title, { kind, value });
+      }
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    closeBtn.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    // Search & Sort
+    function applyFilters() {
+      const term = (search?.value || '').trim().toLowerCase();
+      const cards = Array.from(grid.querySelectorAll('article[data-episode-id]'));
+
+      // filter
+      cards.forEach(card => {
+        const matches = !term || card.dataset.title.includes(term);
+        card.classList.toggle('hidden', !matches);
+      });
+
+      // sort — build a sortable snapshot, then re-append
+      const sorted = cards
+        .filter(card => !card.classList.contains('hidden'))
+        .sort((a, b) => {
+          const mode = sort?.value || 'date-desc';
+          if (mode === 'date-desc') return (b.dataset.date).localeCompare(a.dataset.date);
+          if (mode === 'date-asc')  return (a.dataset.date).localeCompare(b.dataset.date);
+          if (mode === 'title-asc') return (a.dataset.title).localeCompare(b.dataset.title);
+          if (mode === 'title-desc')return (b.dataset.title).localeCompare(a.dataset.title);
+          return 0;
+        });
+
+      // reflow DOM
+      sorted.forEach(el => grid.appendChild(el));
+    }
+
+    search?.addEventListener('input', applyFilters);
+    sort?.addEventListener('change', applyFilters);
+    applyFilters(); // initial
+  })();
+  </script>
+</Layout>

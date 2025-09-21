@@ -1,0 +1,288 @@
+{
+  "Episode 1": [
+    {
+      "groupId": "ep1-a",
+      "artifactId": "flux_capacitor",
+      "points": 45,
+      "tagline": "When the serpents meet, the past will bow to the future.",
+      "clues": [
+        { "id": "ep1-a-title",  "type": "title",  "text": "88 Problems..." },
+        { "id": "ep1-a-image",  "type": "image",  "image": "/clues/ep1/flux_capacitor_blur.png" },
+        { "id": "ep1-a-line",   "type": "spoken", "text": "1.21 gigawatts dance when the dial reads double eights" }
+      ]
+    },
+    {
+      "groupId": "ep1-b",
+      "artifactId": "nuka_cola_fridge",
+      "points": 25,
+      "tagline": "Drink deep, and remember the world before it melted.",
+      "clues": [
+        { "id": "ep1-b-title",  "type": "title",  "text": "A Vaulted Relic" },
+        { "id": "ep1-b-image",  "type": "image",  "image": "/clues/ep1/nuka_fridge_blur.png" },
+        { "id": "ep1-b-line",   "type": "spoken", "text": "Chilled contraband from a retro-future that never came to pass" }
+      ]
+    },
+    {
+      "groupId": "ep1-c",
+      "artifactId": "stay_puft",
+      "points": 25,
+      "tagline": "Harmless in thought, ruinous in form.",
+      "clues": [
+        { "id": "ep1-c-title",  "type": "title",  "text": "The Smiling Cataclysm" },
+        { "id": "ep1-c-image",  "type": "image",  "image": "/clues/ep1/stay_puft_blur.png" },
+        { "id": "ep1-c-line",   "type": "spoken", "text": "Summoned by crossed streams and a sweet surrender. The city’s most calorific kaiju." }
+      ]
+    }
+  ],
+  "Episode 2": [
+    {
+      "groupId": "ep2-a",
+      "artifactId": "hoverboard",
+      "points": 35,
+      "tagline": "It will carry you to glory, unless the sea claims you first.",
+      "clues": [
+        { "id": "ep2-a-title",  "type": "title",  "text": "The 2015 most desirable toy that never was" },
+        { "id": "ep2-a-image",  "type": "image",  "image": "/clues/ep2/hoverboard_blur.png" },
+        { "id": "ep2-a-line",   "type": "spoken", "text": "Useless on water, unless you’ve got power" }
+      ]
+    },
+    {
+      "groupId": "ep2-b",
+      "artifactId": "avengers_lunchbox",
+      "points": 15,
+      "tagline": "Guard your bread — even heroes hunger.",
+      "clues": [
+        { "id": "ep2-b-title",  "type": "title",  "text": "Heroes at Noon" },
+        { "id": "ep2-b-image",  "type": "image",  "image": "/clues/ep2/avengers_lunch_blur.png" },
+        { "id": "ep2-b-line",   "type": "spoken", "text": "Midday meal vault of champions, often paired with a Thanos." }
+      ]
+    },
+    {
+      "groupId": "ep2-c",
+      "artifactId": "bttf_poster",
+      "points": 35,
+      "tagline": "Step forward, and let the fire carry you to yesterday.",
+      "clues": [
+        { "id": "ep2-c-title",  "type": "title",  "text": "Chrono Invitation" },
+        { "id": "ep2-c-image",  "type": "image",  "image": "/clues/ep2/bttf_poster_blur.png" },
+        { "id": "ep2-c-line",   "type": "spoken", "text": "The chrome-winged chariot idles in fire..." }
+      ]
+    }
+  ],
+
+  "Episode 3": [
+    {
+      "groupId": "ep3-a",
+      "artifactId": "sega_master_system",
+      "points": 15,
+      "tagline": "The crown was his, until the blue lightning came.",
+      "clues": [
+        { "id": "ep3-a-title",  "type": "title",  "text": "Nintendon't" },
+        { "id": "ep3-a-image",  "type": "image",  "image": "/clues/ep3/sega_ms_blur.png" },
+        { "id": "ep3-a-line",   "type": "spoken", "text": "Sega does" }
+      ]
+    },
+    {
+      "groupId": "ep3-b",
+      "artifactId": "nuka_cola_can",
+      "points": 25,
+      "tagline": "One sip, and you’ll taste the end.",
+      "clues": [
+        { "id": "ep3-b-title",  "type": "title",  "text": "Fizz of the forgotten land" },
+        { "id": "ep3-b-image",  "type": "image",  "image": "/clues/ep3/nuka_can_blur.png" },
+        { "id": "ep3-b-line",   "type": "spoken", "text": "The taste comes with +3 rads." }
+      ]
+    },
+    {
+      "groupId": "ep3-c",
+      "artifactId": "duck_hunt_cart",
+      "points": null,
+      "tagline": "Pull the trigger — but beware who laughs last.",
+      "clues": [
+        { "id": "ep3-c-title",  "type": "title",  "text": "The Hunters Grey Reliquary" },
+        { "id": "ep3-c-image",  "type": "image",  "image": "/clues/ep3/duck_hunt_blur.png" },
+        { "id": "ep3-c-line",   "type": "spoken", "text": "Innocence in plastic, betrayal in pixels. Snakes always hide in the grass." }
+      ]
+    }
+  ],
+
+  "Episode 4": [
+    {
+      "groupId": "ep4-a",
+      "artifactId": "terminator_poster",
+      "points": 15,
+      "tagline": "You cannot stop what’s already sent.",
+      "clues": [
+        { "id": "ep4-a-title",  "type": "title",  "text": "4 years until Judgement Day" },
+        { "id": "ep4-a-image",  "type": "image",  "image": "/clues/ep4/terminator_blur.png" },
+        { "id": "ep4-a-line",   "type": "spoken", "text": "1984's Cybernetic emissary from 2029" }
+      ]
+    },
+    {
+      "groupId": "ep4-b",
+      "artifactId": "bladerunner_whisky",
+      "points": 25,
+      "tagline": "Sip, and you may never wake.",
+      "clues": [
+        { "id": "ep4-b-title",  "type": "title",  "text": "Same Malt, More Origami" },
+        { "id": "ep4-b-image",  "type": "image",  "image": "/clues/ep4/bladerunner_whisky_blur.png" },
+        { "id": "ep4-b-line",   "type": "spoken", "text": "Cut crystal glints in neon rain, poured for a man who might be dreaming." }
+      ]
+    },
+    {
+      "groupId": "ep4-c",
+      "artifactId": "r2d2",
+      "points": 45,
+      "tagline": "Trust the one who speaks in whistles.",
+      "clues": [
+        { "id": "ep4-c-title",  "type": "title",  "text": "The Whistling Archivist...Anarchist?" },
+        { "id": "ep4-c-image",  "type": "image",  "image": "/clues/ep4/r2d2_blur.png" },
+        { "id": "ep4-c-line",   "type": "spoken", "text": "A dome of secrets rolls unseen; the smallest of heralds with the weight of a rebellion in its belly." }
+      ]
+    }
+  ],
+
+  "Episode 5": [
+    {
+      "groupId": "ep5-a",
+      "artifactId": "delorean",
+      "points": 35,
+      "tagline": "Its wings are steel, its prey is time.",
+      "clues": [
+        { "id": "ep5-a-title",  "type": "title",  "text": "It's not the Tardis, Jim." },
+        { "id": "ep5-a-image",  "type": "image",  "image": "/clues/ep5/delorean_blur.png" },
+        { "id": "ep5-a-line",   "type": "spoken", "text": "Born in scandal and scrap, its flux-fed destiny outran its bankruptcy" }
+      ]
+    },
+    {
+      "groupId": "ep5-b",
+      "artifactId": "sword_of_omens",
+      "points": 35,
+      "tagline": "Gaze into its eye — if it gazes back, you are chosen.",
+      "clues": [
+        { "id": "ep5-b-title",  "type": "title",  "text": "Sight Beyond Sight" },
+        { "id": "ep5-b-image",  "type": "image",  "image": "/clues/ep5/sword_omens_blur.png" },
+        { "id": "ep5-b-line",   "type": "spoken", "text": "The population of Third Earth had sharp senses..." }
+      ]
+    },
+    {
+      "groupId": "ep5-c",
+      "artifactId": "robocop_poster",
+      "points": 55,
+      "tagline": "Serve the public trust — or be served by the barrel.",
+      "clues": [
+        { "id": "ep5-c-title",  "type": "title",  "text": "Serve the Public Trust" },
+        { "id": "ep5-c-image",  "type": "image",  "image": "/clues/ep5/robocop_blur.png" },
+        { "id": "ep5-c-line",   "type": "spoken", "text": "Stay out of trouble and corporate greed will issue no directives." }
+      ]
+    }
+  ],
+
+  "Episode 6": [
+    {
+      "groupId": "ep6-a",
+      "artifactId": "top_gun_poster",
+      "points": 15,
+      "tagline": "Fly high, but don’t outfly your shadow.",
+      "clues": [
+        { "id": "ep6-a-title",  "type": "title",  "text": "Danger Zone" },
+        { "id": "ep6-a-image",  "type": "image",  "image": "/clues/ep6/top_gun_blur.png" },
+        { "id": "ep6-a-line",   "type": "spoken", "text": "You may have that loving feeling but I feel the need for...speed." }
+      ]
+    },
+    {
+      "groupId": "ep6-b",
+      "artifactId": "mavericks_aviators",
+      "points": 35,
+      "tagline": "Your enemy will see themselves just before they fall.",
+      "clues": [
+        { "id": "ep6-b-title",  "type": "title",  "text": "Mirrors for the sun" },
+        { "id": "ep6-b-image",  "type": "image",  "image": "/clues/ep6/aviators_blur.png" },
+        { "id": "ep6-b-line",   "type": "spoken", "text": "Bausch & Lomb’s proof that MiGs, sunsets, and volleyball all reflect glory." }
+      ]
+    },
+    {
+      "groupId": "ep6-c",
+      "artifactId": "mavericks_jacket",
+      "points": null,
+      "tagline": "Every stitch tells a story — some end mid-sentence.",
+      "clues": [
+        { "id": "ep6-c-title",  "type": "title",  "text": "The leather chronicle" },
+        { "id": "ep6-c-image",  "type": "image",  "image": "/clues/ep6/jacket_blur.png" },
+        { "id": "ep6-c-line",   "type": "spoken", "text": "It tells more stories than a news anchor." }
+      ]
+    }
+  ],
+
+  "Episode 7": [
+    {
+      "groupId": "ep7-a",
+      "artifactId": "matrix_of_leadership",
+      "points": 65,
+      "tagline": "It will not open for the unworthy.",
+      "clues": [
+        { "id": "ep7-a-title",  "type": "title",  "text": "The lightest touch" },
+        { "id": "ep7-a-image",  "type": "image",  "image": "/clues/ep7/matrix_blur.png" },
+        { "id": "ep7-a-line",   "type": "spoken", "text": "Talisman passed in its prime, a record of the ages to illuminate the darkest of times." }
+      ]
+    },
+    {
+      "groupId": "ep7-b",
+      "artifactId": "transformers_1986_poster",
+      "points": 45,
+      "tagline": "The song ends, the spark dies.",
+      "clues": [
+        { "id": "ep7-b-title",  "type": "title",  "text": "More than meets the eye" },
+        { "id": "ep7-b-image",  "type": "image",  "image": "/clues/ep7/transformers86_blur.png" },
+        { "id": "ep7-b-line",   "type": "spoken", "text": "1986 War of Metal and Rock that made Stan Bush proud." }
+      ]
+    },
+    {
+      "groupId": "ep7-c",
+      "artifactId": "optimus_prime",
+      "points": 75,
+      "tagline": "When he calls, they follow.",
+      "clues": [
+        { "id": "ep7-c-title",  "type": "title",  "text": "Steelie Eyed" },
+        { "id": "ep7-c-image",  "type": "image",  "image": "/clues/ep7/optimus_blur.png" },
+        { "id": "ep7-c-line",   "type": "spoken", "text": "Cullen Decepticons like a knife through butter..." }
+      ]
+    }
+  ],
+
+  "Episode 8": [
+    {
+      "groupId": "ep8-a",
+      "artifactId": "cap_shield",
+      "points": null,
+      "tagline": "Throw it away, and it will still find you.",
+      "clues": [
+        { "id": "ep8-a-title",  "type": "title",  "text": "Stars and Strikes" },
+        { "id": "ep8-a-image",  "type": "image",  "image": "/clues/ep8/cap_shield_blur.png" },
+        { "id": "ep8-a-line",   "type": "spoken", "text": "Physics is for noobs. This thing always comes back and it ain't a boomerang." }
+      ]
+    },
+    {
+      "groupId": "ep8-b",
+      "artifactId": "thundercats_logo",
+      "points": null,
+      "tagline": "Raise it, and hear the roar.",
+      "clues": [
+        { "id": "ep8-b-title",  "type": "title",  "text": "A lions sigil" },
+        { "id": "ep8-b-image",  "type": "image",  "image": "/clues/ep8/thundercats_blur.png" },
+        { "id": "ep8-b-line",   "type": "spoken", "text": "Crimson Sigil that gathered the pride from their lair." }
+      ]
+    },
+    {
+      "groupId": "ep8-c",
+      "artifactId": "avengers_logo",
+      "points": 25,
+      "tagline": "When you see it, the war has already begun.",
+      "clues": [
+        { "id": "ep8-c-title",  "type": "title",  "text": "The mark of assembly" },
+        { "id": "ep8-c-image",  "type": "image",  "image": "/clues/ep8/avengers_logo_blur.png" },
+        { "id": "ep8-c-line",   "type": "spoken", "text": "What do gods, spies, monsters and playboy philanthropists have in common anyway?" }
+      ]
+    }
+  ]
+}

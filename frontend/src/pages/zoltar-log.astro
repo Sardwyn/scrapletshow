@@ -1,0 +1,230 @@
+---
+import Layout from '../layouts/layout.astro';
+import NEWS from '../data/news.json'; // <-- edit this JSON to publish official posts
+
+// helper: date label
+const fmt = (d) =>
+  new Date(d).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+
+// helper: youtube embed URL
+function renderYouTubeEmbed(url) {
+  try {
+    const u = new URL(url);
+    let id = '';
+    if (u.hostname.includes('youtu.be')) id = u.pathname.slice(1);
+    else id = u.searchParams.get('v') || '';
+    return id ? `https://www.youtube.com/embed/${id}?rel=0` : null;
+  } catch {
+    return null;
+  }
+}
+
+// sort newest-first for SSR-rendered official items
+const officialSorted = (Array.isArray(NEWS) ? NEWS : [])
+  .slice()
+  .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+---
+
+<Layout title="News & Zoltar">
+  <section class="max-w-6xl mx-auto px-4 py-8 text-white">
+    <div class="flex items-center gap-3 mb-6">
+      <h1 class="text-2xl sm:text-3xl font-black tracking-wide">News & Zoltar</h1>
+      <!-- open in new tab so you don't leave the log page -->
+      <a href="/zoltar" target="_blank" rel="noopener"
+         class="ml-auto px-3 py-2 bg-neonGreen text-black font-bold rounded hover:opacity-90">
+        Ask Zoltar
+      </a>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-4 flex flex-wrap gap-2 text-sm">
+      <button class="tab px-3 py-1 border border-pink rounded" data-filter="all">All</button>
+      <button class="tab px-3 py-1 border border-pink rounded" data-filter="official">Official</button>
+      <button class="tab px-3 py-1 border border-pink rounded" data-filter="zoltar">Zoltar</button>
+    </div>
+
+    <!-- Feed: SSR official items first -->
+    <ul id="news-feed" class="space-y-4">
+      {officialSorted.map((item) => (
+        <li
+          class="card bg-black/30 border-2 border-pink rounded-xl p-4 shadow-xl"
+          data-kind="official"
+          data-date={item.date}
+          data-id={item.id}
+        >
+          <div class="flex items-start gap-3">
+            <div class="shrink-0 mt-1 text-xs px-2 py-1 border border-pink rounded">
+              {fmt(item.date)}
+            </div>
+            <div class="flex-1">
+              <h2 class="font-bold mb-1 text-shadow-pink">{item.title}</h2>
+
+              {item.type === 'note' && (
+                <p class="text-white/80">{item.body}</p>
+              )}
+
+              {item.type === 'link' && (
+                <div class="text-white/80">
+                  {item.body && <p class="mb-2">{item.body}</p>}
+                  <a href={item.url} class="underline hover:text-pink break-all">{item.url}</a>
+                </div>
+              )}
+
+              {item.type === 'tweet' && (
+                <div class="text-white/80">
+                  {/* progressive enhancement; upgraded by client script */}
+                  <blockquote class="tweet-embed" data-tweet-url={item.tweetUrl}>
+                    <a href={item.tweetUrl} class="underline hover:text-pink break-all">{item.tweetUrl}</a>
+                  </blockquote>
+                </div>
+              )}
+
+              {item.type === 'video' && (() => {
+                const src = renderYouTubeEmbed(item.youtubeUrl);
+                return src ? (
+                  <div class="aspect-video bg-black border border-pink/50 rounded overflow-hidden mt-2">
+                    <iframe
+                      src={src}
+                      class="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen
+                      loading="lazy"
+                      title={item.title}
+                    />
+                  </div>
+                ) : (
+                  <a href={item.youtubeUrl} class="underline hover:text-pink break-all">{item.youtubeUrl}</a>
+                );
+              })()}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <!-- Empty state (if nothing after filters) -->
+    <div id="news-empty" class="hidden text-white/70 mt-6">No posts yet. Check back soon!</div>
+  </section>
+
+  <!-- Client logic: tabs, minimal SSE Zoltar stream, tweet enhancement -->
+  <script is:client>
+    (function () {
+      var feed = document.getElementById('news-feed');
+      var empty = document.getElementById('news-empty');
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+      var filter = 'all';
+
+      // helpers
+      function byDateDesc(a, b) {
+        var ad = a.getAttribute('data-date') || '';
+        var bd = b.getAttribute('data-date') || '';
+        return bd.localeCompare(ad);
+      }
+      function applyFilter() {
+        var cards = Array.prototype.slice.call(feed.querySelectorAll('.card'));
+        var shown = 0;
+        cards.forEach(function (card) {
+          var kind = card.getAttribute('data-kind') || 'official';
+          var show = (filter === 'all') || (filter === kind);
+          if (show) shown++;
+          card.classList.toggle('hidden', !show);
+        });
+        empty.classList.toggle('hidden', shown > 0);
+      }
+
+      // tabs
+      tabs.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          filter = btn.getAttribute('data-filter') || 'all';
+          tabs.forEach(function (b) { b.classList.toggle('bg-pink', b === btn); });
+          applyFilter();
+        }, { passive: true });
+      });
+
+      // tweet embeds (progressive)
+      function enhanceTweets() {
+        var blocks = document.querySelectorAll('.tweet-embed[data-tweet-url]');
+        if (!blocks.length) return;
+        function loadScript() {
+          return new Promise(function (resolve, reject) {
+            if (document.getElementById('xwidgets')) return resolve();
+            var s = document.createElement('script');
+            s.id = 'xwidgets';
+            s.src = 'https://platform.twitter.com/widgets.js';
+            s.async = true;
+            s.onload = function () { resolve(); };
+            s.onerror = reject;
+            document.head.appendChild(s);
+          });
+        }
+        loadScript().then(function () {
+          if (window.twttr && window.twttr.widgets && window.twttr.widgets.load) {
+            window.twttr.widgets.load();
+          }
+        }).catch(function () {});
+      }
+
+      // ------- Zoltar card rendering (simple)
+      function esc(s) { return String(s || '').replace(/</g, '&lt;'); }
+      function zoltarCardHTML(z) {
+        var dateLabel = new Date(z.date).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+        var userLine = z.user ? '<div class="text-xs text-white/60 mb-1">Uttered to <strong>' + esc(z.user) + '</strong></div>' : '';
+        return ''
+          + '<li class="card bg-black/30 border-2 border-pink rounded-xl p-4 shadow-xl"'
+          + ' data-kind="zoltar" data-date="' + esc(z.date) + '" data-id="' + esc(z.id) + '">'
+          + '  <div class="flex items-start gap-3">'
+          + '    <div class="shrink-0 mt-1 text-xs px-2 py-1 border border-pink rounded">' + esc(dateLabel) + '</div>'
+          + '    <div class="flex-1">'
+          + '      <h2 class="font-bold mb-1">Zoltar speaks</h2>'
+          + '      <div class="text-white/80">'
+          +           userLine
+          + '        <p class="mb-2 italic">“' + esc(z.message) + '”</p>'
+          + '      </div>'
+          + '    </div>'
+          + '  </div>'
+          + '</li>';
+      }
+
+      // ------- Live SSE stream (push)
+      function startLiveZoltar() {
+        try {
+          var es = new EventSource('/events/zoltar');
+          es.addEventListener('prediction', function (e) {
+            var payload;
+            try { payload = JSON.parse(e.data); } catch (_) { return; }
+            // normalize minimal shape
+            var z = {
+              id: String(payload.id || (Date.now() + '-' + Math.random().toString(36).slice(2))),
+              date: String(payload.date || new Date().toISOString()),
+              user: payload.user || null,
+              message: String(payload.message || '')
+            };
+            // dedupe
+            if (feed.querySelector('.card[data-id="' + CSS.escape(z.id) + '"]')) return;
+
+            var wrap = document.createElement('div');
+            wrap.innerHTML = zoltarCardHTML(z);
+            feed.prepend(wrap.firstElementChild);
+
+            // keep list sorted (defensive)
+            var all = Array.prototype.slice.call(feed.querySelectorAll('.card')).sort(byDateDesc);
+            all.forEach(function (el) { feed.appendChild(el); });
+
+            applyFilter();
+          });
+        } catch (err) {
+          console.warn('SSE unavailable:', err);
+        }
+      }
+
+      // init
+      enhanceTweets();
+      applyFilter();
+      startLiveZoltar();
+    })();
+  </script>
+</Layout>
