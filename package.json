@@ -1,0 +1,11 @@
+{
+  "name": "scraplet",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "dev:front": "npm --workspace frontend run dev",
+    "dev:back": "npm --workspace backend run start",
+    "dev": "concurrently \\"npm run dev:front\\" \\"npm run dev:back\\""
+  },
+  "devDependencies": { "concurrently": "^9.0.0" }
+}
